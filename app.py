@@ -17,12 +17,17 @@ def get_method():
 @app.post("/blogs")
 async def create_blogs(request:Request):
     data =await request.json()
-    topic=data.get("topic",)
+    topic=data.get("topic","")
+    language=data.get("language","")
 
     llm=GroqLLM().get_llm()
 
     graph_builder=GraphBuilder(llm)
-    if topic:
+
+    if topic and language:
+        graph=graph_builder.setup_graph(usecase="Topic with Translation")
+        state=graph.invoke({"topic":topic, "curr_lang":language})
+    elif topic:
         graph=graph_builder.setup_graph(usecase="Topic")
         state=graph.invoke({"topic":topic})
 
