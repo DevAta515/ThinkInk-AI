@@ -33,11 +33,11 @@ class GraphBuilder:
         self.graph.add_node("title_creation",blog_node.title_creation)
         self.graph.add_node("content_generation",blog_node.content_generation)
 
-        self.graph.add_node("hindi_translation",lambda state:blog_node.translation({**state,"current_language":"hindi"}))
+        self.graph.add_node("hindi_translation",lambda state:blog_node.translation({**state,"curr_lang":"hindi"}))
 
-        self.graph.add_node("arabic_translation",lambda state:blog_node.translation({**state,"current_language":"arabic"}))
+        self.graph.add_node("arabic_translation",lambda state:blog_node.translation({**state,"curr_lang":"arabic"}))
 
-        self.graph.add_node("route", blog_node.route_decision)
+        self.graph.add_node("route", blog_node.route)
 
         print("IN build_lang_graph")
 
@@ -47,7 +47,7 @@ class GraphBuilder:
 
         self.graph.add_conditional_edges(
             "route",
-            lambda state: state["next"],
+            blog_node.route_decision,
             {"hindi": "hindi_translation", "arabic": "arabic_translation"}
         )
 
@@ -58,8 +58,10 @@ class GraphBuilder:
 
     def setup_graph(self, usecase):
         if usecase=="Topic":
+            print("USECASE", usecase)
             self.build_topic_graph()
         if usecase=="Topic with Translation":
+            print("USECASE", usecase)
             self.build_lang_graph()
 
         return self.graph.compile()

@@ -49,14 +49,19 @@ class BlogNode:
 
         """
         print("HERE    ", state["curr_lang"])
+        print(state)
         blog_content=state["blog"]["content"]
         messages=[
             HumanMessage(translation_prompt.format(current_language=state["curr_lang"], blog_content=blog_content))
-
         ]
-        transaltion_content = self.llm.with_structured_output(Blog).invoke(messages)
-        return {"blog": {"content": transaltion_content}}
-    
+        try:
+            transaltion_content = self.llm.with_structured_output(Blog).invoke(messages)
+            print("ANSWER     ", transaltion_content)
+            return {"blog": {"content": transaltion_content}}
+        except Exception as e:
+            ValueError(f"Error here {e}")
+
+
     def route(self, state:BlogState):
         return {"current_language":state['curr_lang']}
     
@@ -64,11 +69,11 @@ class BlogNode:
         """
         Route the content to the respective translation function.
         """
-        # if state["curr_lang"] == "hindi":
-        #     return "hindi"
-        # elif state["curr_lang"] == "french": 
-        #     return "french"
-        # else:
-        #     return state['curr_lang']
+        if state["curr_lang"] == "hindi":
+            return "hindi"
+        elif state["curr_lang"] == "arabic": 
+            return "arabic"
+        else:
+            return state['curr_lang']
 
-        return {"next": state["curr_lang"]}
+        # return {"next": state["curr_lang"]}
