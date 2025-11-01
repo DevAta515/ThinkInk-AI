@@ -2,6 +2,8 @@ from fastapi import FastAPI, Request
 from src.graphs.graphbuilder import GraphBuilder
 from src.llms.groqllm import GroqLLM
 import uvicorn
+from fastapi.responses import JSONResponse
+from datetime import datetime
 
 import os
 from dotenv import load_dotenv
@@ -11,8 +13,23 @@ app=FastAPI()
 os.environ["LANGSMITH_API_KEY"]=os.getenv("LANGCHAIN_API_KEY")
 
 @app.get("/")
-def get_method():
-    return {"data": "Hello"}
+async def root():
+    return {"message": "ThinkInk-AI Blog Generator API"}
+
+@app.get("/health")
+async def health_check():
+    """
+    Health check endpoint to verify API status
+    """
+    return JSONResponse(
+        status_code=200,
+        content={
+            "status": "healthy",
+            "timestamp": datetime.utcnow().isoformat(),
+            "service": "ThinkInk-AI Blog Generator",
+            "version": "1.0.0"
+        }
+    )
 
 @app.post("/blogs")
 async def create_blogs(request:Request):
